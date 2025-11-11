@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jal-Sarthi Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent; /* Removes blue tap highlight on mobile */
+        }
+        .animate-pulse-fast {
+            animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: .6;
+            }
+        }
+        /* Simple transition for card colors */
+        .card {
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+        /* Modal styles */
+        .modal {
+            transition: opacity 0.3s ease;
+        }
+        .modal-content {
+            transition: transform 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <div class="max-w-sm mx-auto bg-white shadow-lg h-screen flex flex-col relative">
+        <!-- Header -->
+        <header class="bg-blue-600 text-white p-4 flex justify-between items-center shadow-md z-10">
+            <div class="flex items-center space-x-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM5.5 9a.5.5 0 01.5-.5h2.4a.5.5 0 01.5.5v5a.5.5 0 01-1 0V10H6a.5.5 0 01-.5-.5zm4.6 5.4a.5.5 0 00.9 0l2-4A.5.5 0 0012.5 10h-2a.5.5 0 00-.4.8l2 4z" clip-rule="evenodd" />
+                </svg>
+                <h1 class="text-xl font-bold">Jal-Sarthi</h1>
+            </div>
+            <div class="text-right">
+                <p class="text-xs font-semibold" id="current-time">15:31</p>
+                <p class="text-xs opacity-80" id="current-date">07 Oct, 2025</p>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-grow p-4 overflow-y-auto">
+            <div class="mb-4">
+                <h2 class="text-lg font-semibold text-gray-800">Welcome, Operator!</h2>
+                <p class="text-sm text-gray-500">Gram Panchayat: Asha Nagar</p>
+            </div>
+
+            <!-- Dashboard Grid -->
+            <div class="grid grid-cols-2 gap-4">
+                <!-- Pump Status -->
+                <div id="pump-status-card" class="card bg-green-50 border-2 border-green-200 p-4 rounded-xl shadow-sm text-center flex flex-col justify-between cursor-pointer" onclick="togglePump()">
+                    <div>
+                        <svg id="pump-icon" xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mx-auto text-green-500" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+                        </svg>
+                        <h3 class="text-md font-semibold mt-2 text-gray-800">Pump Status</h3>
+                    </div>
+                    <div>
+                        <p id="pump-status-text" class="text-2xl font-bold text-green-600 mt-1">ON</p>
+                        <p id="pump-runtime-container" class="text-xs text-gray-500 mt-1">Running: <span id="pump-runtime">4h 15m</span></p>
+                    </div>
+                </div>
+
+                <!-- Water Tank Level -->
+                <div class="card bg-blue-50 border-2 border-blue-200 p-4 rounded-xl shadow-sm text-center flex flex-col justify-between">
+                    <div>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mx-auto text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <h3 class="text-md font-semibold mt-2 text-gray-800">Tank Level</h3>
+                    </div>
+                    <div>
+                        <p class="text-2xl font-bold text-blue-600 mt-1">82%</p>
+                         <p class="text-xs text-gray-500 mt-1">Status: Filling</p>
+                    </div>
+                </div>
+
+                <!-- Water Quality -->
+                <div class="card bg-indigo-50 border-2 border-indigo-200 p-4 rounded-xl shadow-sm col-span-2">
+                    <h3 class="text-md font-semibold text-gray-800 text-center mb-2">Water Quality (Safe)</h3>
+                    <div class="flex justify-around text-center">
+                        <div>
+                            <p class="text-xs text-gray-500">pH</p>
+                            <p class="text-lg font-bold text-indigo-600">7.2</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-500">TDS (ppm)</p>
+                            <p class="text-lg font-bold text-indigo-600">180</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-500">Cl (mg/L)</p>
+                            <p class="text-lg font-bold text-indigo-600">0.4</p>
+                        </div>
+                    </div>
+                     <p class="text-xs text-gray-400 text-center mt-2">Last tested: 14:00 Today</p>
+                </div>
+                
+                <!-- Leakage Alert -->
+                <div id="leakage-alert-card" class="card bg-gray-50 border-2 border-gray-200 p-4 rounded-xl shadow-sm text-center col-span-2 flex items-center justify-center space-x-4">
+                    <svg id="leakage-icon" xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                    <div>
+                        <h3 class="text-md font-semibold text-gray-800">Leakage Status</h3>
+                        <p id="leakage-status-text" class="text-lg font-bold text-gray-500">No Leaks Detected</p>
+                    </div>
+                </div>
+                 
+                <!-- Report Issue Button -->
+                <button id="report-issue-btn" class="col-span-2 bg-red-500 hover:bg-red-600 text-white font-bold py-4 px-4 rounded-xl shadow-lg transition-transform transform hover:scale-105 flex items-center justify-center space-x-3" onclick="openModal()">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span>Report an Issue</span>
+                </button>
+            </div>
+            
+            <!-- SIMULATION CONTROL -->
+            <div class="mt-6 border-t-2 pt-4 text-center">
+                 <h3 class="text-sm font-semibold text-gray-600 mb-2">Simulation Controls</h3>
+                 <button onclick="toggleLeak()" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105">
+                    Toggle Leak Alert
+                 </button>
+            </div>
+        </main>
+
+        <!-- Bottom Navigation -->
+        <nav class="bg-white border-t-2 border-gray-200 p-2 flex justify-around">
+             <a href="#" class="text-blue-600 p-2 rounded-lg flex flex-col items-center w-1/4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+                </svg>
+                <span class="text-xs font-semibold mt-1">Dashboard</span>
+            </a>
+            <a href="#" class="text-gray-500 hover:text-blue-600 p-2 rounded-lg flex flex-col items-center w-1/4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <span class="text-xs font-semibold mt-1">Reports</span>
+            </a>
+            <a href="#" class="text-gray-500 hover:text-blue-600 p-2 rounded-lg flex flex-col items-center w-1/4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547a2 2 0 00-.547 1.806l.477 2.387a6 6 0 00.517 3.86l.158.318a6 6 0 003.86.517l2.387.477a2 2 0 001.806-.547a2 2 0 00.547-1.806l-.477-2.387a6 6 0 00-.517-3.86l-.158-.318z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6V5m0 14V10m0 0a2 2 0 100-4 2 2 0 000 4z" />
+                </svg>
+                <span class="text-xs font-semibold mt-1">Quality</span>
+            </a>
+            <a href="#" class="text-gray-500 hover:text-blue-600 p-2 rounded-lg flex flex-col items-center w-1/4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                <span class="text-xs font-semibold mt-1">Settings</span>
+            </a>
+        </nav>
+
+        <!-- AI Issue Reporter Modal -->
+        <div id="ai-modal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-20 opacity-0 pointer-events-none">
+            <div class="modal-content bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 transform scale-95">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold text-gray-800">Report an Issue</h2>
+                    <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <div>
+                    <label for="issue-description" class="block text-sm font-medium text-gray-700 mb-2">Describe the problem in your own words:</label>
+                    <textarea id="issue-description" rows="4" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="e.g., motor se ajeeb aawaz aa rahi hai..."></textarea>
+                </div>
+                <div class="mt-4">
+                    <button id="get-suggestion-btn" onclick="getAISuggestion()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg shadow-lg flex items-center justify-center space-x-2">
+                        <span>✨ Get AI Suggestion</span>
+                    </button>
+                </div>
+                <div id="ai-response-container" class="mt-4 hidden">
+                    <div id="loader" class="flex justify-center items-center space-x-2">
+                         <div class="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
+                         <div class="w-3 h-3 bg-blue-500 rounded-full animate-pulse" style="animation-delay: 0.2s;"></div>
+                         <div class="w-3 h-3 bg-blue-500 rounded-full animate-pulse" style="animation-delay: 0.4s;"></div>
+                         <span class="text-gray-600">Jal-Mitra is thinking...</span>
+                    </div>
+                    <div id="ai-result" class="hidden">
+                        <h3 class="text-md font-semibold text-gray-800 border-b pb-2">AI Diagnosis:</h3>
+                        <p id="ai-diagnosis" class="text-gray-700 mt-2 bg-blue-50 p-3 rounded-lg"></p>
+                        <h3 class="text-md font-semibold text-gray-800 mt-4 border-b pb-2">Action Plan:</h3>
+                        <ol id="ai-steps" class="list-decimal list-inside mt-2 space-y-2 text-gray-700"></ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- App State ---
+        let isPumpOn = true;
+        let isLeakDetected = false;
+        let pumpRuntimeInterval;
+
+        // --- DOM Elements ---
+        const timeEl = document.getElementById('current-time');
+        const dateEl = document.getElementById('current-date');
+        const pumpStatusCard = document.getElementById('pump-status-card');
+        const pumpIcon = document.getElementById('pump-icon');
+        const pumpStatusText = document.getElementById('pump-status-text');
+        const pumpRuntimeContainer = document.getElementById('pump-runtime-container');
+        const pumpRuntimeEl = document.getElementById('pump-runtime');
+        const leakageAlertCard = document.getElementById('leakage-alert-card');
+        const leakageIcon = document.getElementById('leakage-icon');
+        const leakageStatusText = document.getElementById('leakage-status-text');
+        const aiModal = document.getElementById('ai-modal');
+        const modalContent = aiModal.querySelector('.modal-content');
+        const aiResponseContainer = document.getElementById('ai-response-container');
+        const loader = document.getElementById('loader');
+        const aiResult = document.getElementById('ai-result');
+        const aiDiagnosis = document.getElementById('ai-diagnosis');
+        const aiSteps = document.getElementById('ai-steps');
+        const issueDescription = document.getElementById('issue-description');
+
+        // --- Functions ---
+
+        // Clock and Date Update
+        function updateTime() {
+            const now = new Date();
+            timeEl.textContent = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: false });
+            dateEl.textContent = now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric'});
+        }
+
+        // Pump Runtime Simulation
+        function startPumpTimer() {
+            if (pumpRuntimeInterval) clearInterval(pumpRuntimeInterval);
+            let hours = 4, minutes = 15, seconds = 0;
+            pumpRuntimeInterval = setInterval(() => {
+                seconds++;
+                if (seconds >= 60) { seconds = 0; minutes++; }
+                if (minutes >= 60) { minutes = 0; hours++; }
+                pumpRuntimeEl.textContent = `${hours}h ${minutes}m`;
+            }, 1000);
+        }
+
+        function stopPumpTimer() {
+            clearInterval(pumpRuntimeInterval);
+        }
+
+        // Toggle Pump Status
+        function togglePump() {
+            isPumpOn = !isPumpOn;
+            updatePumpUI();
+        }
+        
+        function updatePumpUI() {
+            if (isPumpOn) {
+                pumpStatusCard.classList.remove('bg-red-50', 'border-red-200');
+                pumpStatusCard.classList.add('bg-green-50', 'border-green-200');
+                pumpIcon.classList.remove('text-red-500');
+                pumpIcon.classList.add('text-green-500');
+                pumpStatusText.classList.remove('text-red-600');
+                pumpStatusText.classList.add('text-green-600');
+                pumpStatusText.textContent = 'ON';
+                pumpRuntimeContainer.style.visibility = 'visible';
+                startPumpTimer();
+            } else {
+                pumpStatusCard.classList.remove('bg-green-50', 'border-green-200');
+                pumpStatusCard.classList.add('bg-red-50', 'border-red-200');
+                pumpIcon.classList.remove('text-green-500');
+                pumpIcon.classList.add('text-red-500');
+                pumpStatusText.classList.remove('text-green-600');
+                pumpStatusText.classList.add('text-red-600');
+                pumpStatusText.textContent = 'OFF';
+                pumpRuntimeContainer.style.visibility = 'hidden';
+                stopPumpTimer();
+            }
+        }
+
+        // Toggle Leak Alert
+        function toggleLeak() {
+            isLeakDetected = !isLeakDetected;
+            updateLeakUI();
+        }
+
+        function updateLeakUI() {
+            if (isLeakDetected) {
+                leakageAlertCard.classList.remove('bg-gray-50', 'border-gray-200');
+                leakageAlertCard.classList.add('bg-red-100', 'border-red-300', 'animate-pulse-fast');
+                leakageIcon.classList.remove('text-gray-400');
+                leakageIcon.classList.add('text-red-500');
+                leakageStatusText.classList.remove('text-gray-500');
+                leakageStatusText.classList.add('text-red-600');
+                leakageStatusText.textContent = 'Leak Detected!';
+            } else {
+                leakageAlertCard.classList.remove('bg-red-100', 'border-red-300', 'animate-pulse-fast');
+                leakageAlertCard.classList.add('bg-gray-50', 'border-gray-200');
+                leakageIcon.classList.remove('text-red-500');
+                leakageIcon.classList.add('text-gray-400');
+                leakageStatusText.classList.remove('text-red-600');
+                leakageStatusText.classList.add('text-gray-500');
+                leakageStatusText.textContent = 'No Leaks Detected';
+            }
+        }
+        
+        // --- Gemini AI Modal Functions ---
+        
+        function openModal() {
+            aiModal.classList.remove('pointer-events-none', 'opacity-0');
+            modalContent.classList.remove('scale-95');
+        }
+
+        function closeModal() {
+            aiModal.classList.add('opacity-0', 'pointer-events-none');
+            modalContent.classList.add('scale-95');
+            // Reset modal state
+            setTimeout(() => {
+                aiResponseContainer.classList.add('hidden');
+                aiResult.classList.add('hidden');
+                loader.classList.remove('hidden');
+                issueDescription.value = '';
+            }, 300);
+        }
+        
+        async function getAISuggestion() {
+            const userInput = issueDescription.value;
+            if (userInput.trim() === '') {
+                alert('Please describe the issue first.');
+                return;
+            }
+
+            aiResponseContainer.classList.remove('hidden');
+            loader.classList.remove('hidden');
+            aiResult.classList.add('hidden');
+            
+            try {
+                // This is a mocked API call for demonstration.
+                const result = await callGeminiApi(userInput);
+                
+                aiDiagnosis.textContent = result.diagnosis;
+                aiSteps.innerHTML = ''; // Clear previous steps
+                result.steps.forEach(step => {
+                    const li = document.createElement('li');
+                    li.textContent = step;
+                    aiSteps.appendChild(li);
+                });
+
+                loader.classList.add('hidden');
+                aiResult.classList.remove('hidden');
+
+            } catch (error) {
+                console.error("Error calling Gemini API:", error);
+                loader.classList.add('hidden');
+                aiDiagnosis.textContent = "Could not get suggestion. Please check your connection and try again.";
+                aiResult.classList.remove('hidden');
+            }
+        }
+
+        // MOCKED Gemini API Call
+        async function callGeminiApi(userInput) {
+            console.log("Simulating Gemini API call with input:", userInput);
+            
+            const systemPrompt = "You are 'Jal-Mitra', an expert AI assistant for rural water management in India. Your user is a village-level water pump operator with basic technical knowledge. Your goal is to understand their problem description (which may be in Hinglish or a local language) and provide a simple, step-by-step action plan. Respond in clear, simple English. Your response must be a JSON object with two keys: 'diagnosis' (a one-sentence summary of the likely problem) and 'steps' (an array of short, actionable strings).";
+
+            // Mocking network delay
+            await new Promise(resolve => setTimeout(resolve, 2000));
+
+            // Mocked responses based on keywords
+            if (userInput.toLowerCase().includes('aawaz') || userInput.toLowerCase().includes('noise')) {
+                 return {
+                    diagnosis: "The unusual noise likely indicates a mechanical issue with the pump motor or bearings.",
+                    steps: [
+                        "Safely turn off the main power supply to the pump.",
+                        "Check for any visible debris or blockages around the pump's intake.",
+                        "Listen closely to pinpoint the source of the noise (motor, belt, etc.).",
+                        "Do not attempt to open the motor casing. Report this as a 'Mechanical Fault'."
+                    ]
+                };
+            } else if (userInput.toLowerCase().includes('ganda pani') || userInput.toLowerCase().includes('dirty water')) {
+                return {
+                    diagnosis: "Dirty water suggests a possible contamination in the source or a crack in the pipeline.",
+                    steps: [
+                        "Immediately stop the pump to prevent distribution of contaminated water.",
+                        "Advise villagers not to drink the water until tested.",
+                        "Take a water sample for a quality test.",
+                        "Inspect the area around the well or borehole for sources of contamination.",
+                        "Check the main pipeline for any visible cracks or leaks."
+                    ]
+                };
+            } else {
+                 return {
+                    diagnosis: "The issue appears to be related to low water pressure or a pumping fault.",
+                    steps: [
+                        "Check if the pump is running and sounds normal.",
+                        "Verify that all valves from the pump to the tank are fully open.",
+                        "Inspect the main pipeline for any visible major leaks.",
+                        "Check the voltage at the pump starter to ensure it's getting proper power."
+                    ]
+                };
+            }
+        }
+
+
+        // --- Initial Load ---
+        document.addEventListener('DOMContentLoaded', () => {
+            updateTime();
+            setInterval(updateTime, 1000);
+            updatePumpUI(); // Sets the initial state correctly
+        });
+
+    </script>
+</body>
+</html>
