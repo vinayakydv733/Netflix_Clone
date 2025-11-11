@@ -5,14 +5,7 @@ import { createUserWithEmailAndPassword,
         signOut} from "firebase/auth";
 import { addDoc, collection, getFirestore } from "firebase/firestore";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyD7IicnSIiaf0-OMLKG_goF0ZXYBqUmqQc",
-  authDomain: "netflix-clone-a32cf.firebaseapp.com",
-  projectId: "netflix-clone-a32cf",
-  storageBucket: "netflix-clone-a32cf.firebasestorage.app",
-  messagingSenderId: "316322890371",
-  appId: "1:316322890371:web:d5ad919d41de1d1c91d1b6"
-};
+
 
 const app = initializeApp(firebaseConfig);
 
